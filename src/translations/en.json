@@ -1,8 +1,29 @@
 {
   "title": "Book Your Appointment",
   "description": "Find and book appointments with top service providers by name, city, or zip code.",
-  "searchPlaceholder": "Search by provider name, city, or zip code",
+  "searchPlaceholder": "Search by name, city, or zip code",
   "noResults": "No providers found.",
-  "language": "Language"
+  "moreResults": "more results",
+  "language": "Language",
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "contact": "Contact",
+    "book": "Book Appointment"
+  },
+  "serviceType": "Service Type",
+  "allServices": "All Services",
+  "search": "Search",
+  "serviceTypes": {
+    "hair": "Hair Salon",
+    "auto": "Auto Repair",
+    "wellness": "Wellness & Spa",
+    "it": "IT Services",
+    "pet": "Pet Care",
+    "dental": "Dental",
+    "massage": "Massage",
+    "fitness": "Fitness",
+    "legal": "Legal Services"
+  }
 }
 

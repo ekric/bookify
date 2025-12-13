@@ -1,8 +1,29 @@
 {
   "title": "Termin Buchen",
   "description": "Finden und buchen Sie Termine bei den besten Dienstleistern nach Name, Stadt oder Postleitzahl.",
-  "searchPlaceholder": "Suche nach Anbietername, Stadt oder Postleitzahl",
+  "searchPlaceholder": "Name, Stadt oder PLZ",
   "noResults": "Keine Anbieter gefunden.",
-  "language": "Sprache"
+  "moreResults": "weitere Ergebnisse",
+  "language": "Sprache",
+  "nav": {
+    "home": "Startseite",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "book": "Termin Buchen"
+  },
+  "serviceType": "Dienstleistung",
+  "allServices": "Alle Dienstleistungen",
+  "search": "Suche",
+  "serviceTypes": {
+    "hair": "Friseur",
+    "auto": "Autowerkstatt",
+    "wellness": "Wellness & Spa",
+    "it": "IT-Dienstleistungen",
+    "pet": "Tierpflege",
+    "dental": "Zahnarzt",
+    "massage": "Massage",
+    "fitness": "Fitness",
+    "legal": "Rechtsanwalt"
+  }
 }
 

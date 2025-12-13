@@ -1,24 +1,20 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import enTranslations from './translations/en.json';
-import esTranslations from './translations/es.json';
-import frTranslations from './translations/fr.json';
 import deTranslations from './translations/de.json';
 
-type Language = 'en' | 'es' | 'fr' | 'de';
+type Language = 'en' | 'de';
 
 type Translations = typeof enTranslations;
 
 const translations: Record<Language, Translations> = {
   en: enTranslations,
-  es: esTranslations,
-  fr: frTranslations,
   de: deTranslations,
 };
 
 interface I18nContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: keyof Translations) => string;
+  t: (key: keyof Translations | string) => string;
   availableLanguages: { code: Language; name: string }[];
 }
 
@@ -26,8 +22,6 @@ const I18nContext = createContext<I18nContextType | undefined>(undefined);
 
 const languageNames: Record<Language, string> = {
   en: 'English',
-  es: 'Español',
-  fr: 'Français',
   de: 'Deutsch',
 };
 
@@ -38,8 +32,8 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     if (saved && translations[saved]) {
       return saved;
     }
-    const browserLang = navigator.language.split('-')[0] as Language;
-    return translations[browserLang] ? browserLang : 'en';
+    const browserLang = navigator.language.split('-')[0];
+    return (browserLang === 'de' || browserLang === 'en') ? browserLang as Language : 'en';
   });
 
   const setLanguage = (lang: Language) => {
@@ -47,8 +41,27 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     localStorage.setItem('bookify-language', lang);
   };
 
-  const t = (key: keyof Translations): string => {
-    return translations[language][key] || translations.en[key] || key;
+  const t = (key: keyof Translations | string): string => {
+    const currentTranslations = translations[language];
+    const fallbackTranslations = translations.en;
+    
+    // Handle nested keys like "serviceTypes.hair"
+    if (key.includes('.')) {
+      const keys = key.split('.');
+      let value: any = currentTranslations;
+      let fallback: any = fallbackTranslations;
+      
+      for (const k of keys) {
+        value = value?.[k];
+        fallback = fallback?.[k];
+      }
+      
+      return value || fallback || key;
+    }
+    
+    return (currentTranslations[key as keyof Translations] as string) || 
+           (fallbackTranslations[key as keyof Translations] as string) || 
+           key;
   };
 
   const availableLanguages = Object.entries(languageNames).map(([code, name]) => ({
