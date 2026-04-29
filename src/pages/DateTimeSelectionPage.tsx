@@ -25,32 +25,68 @@ const DateTimeSelectionPage: React.FC = () => {
   const { selectedProvider, navigate } = useRouting();
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
+  const [calendarDate, setCalendarDate] = useState<Date>(new Date());
 
-  // Generate next 14 days
-  const getDates = (): DateOption[] => {
-    const dates: DateOption[] = [];
-    const today = new Date();
+  // Generate calendar days for the current month view
+  const getCalendarDays = (): (DateOption | null)[] => {
+    const year = calendarDate.getFullYear();
+    const month = calendarDate.getMonth();
     
-    for (let i = 0; i < 14; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
+    const firstDay = new Date(year, month, 1);
+    const lastDay = new Date(year, month + 1, 0);
+    const startDay = firstDay.getDay(); // 0 = Sunday
+    
+    const days: (DateOption | null)[] = [];
+    
+    // Add empty slots for days before the first of the month
+    for (let i = 0; i < startDay; i++) {
+      days.push(null);
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    // Add days of the month
+    for (let day = 1; day <= lastDay.getDate(); day++) {
+      const date = new Date(year, month, day);
+      date.setHours(0, 0, 0, 0);
       
-      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-      const dayNum = date.getDate();
-      const month = date.toLocaleDateString('en-US', { month: 'short' });
-      
-      // Simulate availability - weekends have fewer slots
       const dayOfWeek = date.getDay();
-      const available = dayOfWeek !== 0 && Math.random() > 0.2;
+      const isPast = date < today;
+      const isSunday = dayOfWeek === 0;
       
-      dates.push({
-        date: date.toISOString().split('T')[0],
-        label: `${dayName}, ${dayNum} ${month}`,
+      // Deterministic availability based on date string
+      const dateStr = date.toISOString().split('T')[0];
+      const hash = dateStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const available = !isPast && !isSunday && (hash % 10) > 2;
+      
+      days.push({
+        date: dateStr,
+        label: day.toString(),
         available
       });
     }
     
-    return dates;
+    return days;
+  };
+
+  const goToPreviousMonth = () => {
+    const newDate = new Date(calendarDate);
+    newDate.setMonth(newDate.getMonth() - 1);
+    setCalendarDate(newDate);
+  };
+
+  const goToNextMonth = () => {
+    const newDate = new Date(calendarDate);
+    newDate.setMonth(newDate.getMonth() + 1);
+    setCalendarDate(newDate);
+  };
+
+  const handleCalendarDayClick = (date: DateOption) => {
+    if (date && date.available) {
+      setSelectedDate(date.date);
+      setSelectedTime('');
+    }
   };
 
   // Generate time slots (9 AM to 6 PM)
@@ -62,7 +98,10 @@ const DateTimeSelectionPage: React.FC = () => {
       if (hour === 12) continue;
       
       const time = `${hour.toString().padStart(2, '0')}:00`;
-      const available = Math.random() > 0.3; // Simulate availability
+      
+      // Deterministic availability based on date and time
+      const hash = (selectedDate + time).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      const available = (hash + hour) % 10 > 3;
       
       slots.push({ time, available });
     }
@@ -70,8 +109,14 @@ const DateTimeSelectionPage: React.FC = () => {
     return slots;
   };
 
-  const dates = getDates();
+  const calendarDays = getCalendarDays();
   const timeSlots = getTimeSlots();
+
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   const handleContinue = () => {
     if (!selectedDate || !selectedTime) return;
@@ -156,48 +201,125 @@ const DateTimeSelectionPage: React.FC = () => {
           >
             {t('booking.selectDate')}
           </h2>
+          
+          {/* Calendar Component */}
           <div
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))',
-              gap: '0.5rem',
+              backgroundColor: 'white',
+              borderRadius: '0.5rem',
+              border: '1px solid #ddd',
+              padding: '1rem',
+              marginBottom: '1.5rem',
             }}
           >
-            {dates.map((date) => (
+            {/* Calendar Header */}
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
+              }}
+            >
               <button
-                key={date.date}
-                onClick={() => {
-                  if (date.available) {
-                    setSelectedDate(date.date);
-                    setSelectedTime('');
-                  }
-                }}
-                disabled={!date.available}
+                onClick={goToPreviousMonth}
                 style={{
-                  padding: '0.75rem 0.5rem',
-                  borderRadius: '0.5rem',
-                  border: selectedDate === date.date
-                    ? '2px solid #2575fc'
-                    : '1px solid #ddd',
-                  backgroundColor: !date.available
-                    ? '#f5f5f5'
-                    : selectedDate === date.date
-                      ? '#e8f0fe'
-                      : 'white',
-                  color: !date.available
-                    ? '#ccc'
-                    : selectedDate === date.date
-                      ? '#2575fc'
-                      : '#333',
-                  cursor: date.available ? 'pointer' : 'not-allowed',
-                  fontSize: '0.85rem',
-                  fontWeight: selectedDate === date.date ? '600' : '400',
-                  transition: 'all 0.2s',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.25rem',
+                  border: '1px solid #ddd',
+                  backgroundColor: 'white',
+                  color: '#333',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
                 }}
               >
-                {date.label}
+                ←
               </button>
-            ))}
+              <span style={{ fontWeight: '600', color: '#333' }}>
+                {monthNames[calendarDate.getMonth()]} {calendarDate.getFullYear()}
+              </span>
+              <button
+                onClick={goToNextMonth}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.25rem',
+                  border: '1px solid #ddd',
+                  backgroundColor: 'white',
+                  color: '#333',
+                  cursor: 'pointer',
+                  fontSize: '0.9rem',
+                }}
+              >
+                →
+              </button>
+            </div>
+            
+            {/* Day Names Header */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7, 1fr)',
+                gap: '0.25rem',
+                marginBottom: '0.5rem',
+              }}
+            >
+              {dayNames.map((day) => (
+                <div
+                  key={day}
+                  style={{
+                    textAlign: 'center',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
+                    color: '#666',
+                    padding: '0.25rem',
+                  }}
+                >
+                  {day}
+                </div>
+              ))}
+            </div>
+            
+            {/* Calendar Grid */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(7, 1fr)',
+                gap: '0.25rem',
+              }}
+            >
+              {calendarDays.map((day, index) => (
+                <button
+                  key={index}
+                  onClick={() => day && handleCalendarDayClick(day)}
+                  disabled={!day || !day.available}
+                  style={{
+                    padding: '0.5rem',
+                    borderRadius: '0.25rem',
+                    border: 'none',
+                    backgroundColor: !day
+                      ? 'transparent'
+                      : !day.available
+                        ? '#f5f5f5'
+                        : selectedDate === day.date
+                          ? '#2575fc'
+                          : 'white',
+                    color: !day
+                      ? 'transparent'
+                      : !day.available
+                        ? '#ccc'
+                        : selectedDate === day.date
+                          ? 'white'
+                          : '#333',
+                    cursor: day && day.available ? 'pointer' : 'not-allowed',
+                    fontSize: '0.85rem',
+                    fontWeight: day && selectedDate === day.date ? '600' : '400',
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  {day ? day.label : ''}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 

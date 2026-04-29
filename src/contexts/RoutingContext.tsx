@@ -9,7 +9,7 @@ export interface Provider {
   type: ServiceType;
 }
 
-type Route = 'home' | 'about' | 'contact' | 'provider' | 'serviceSelection' | 'dateTimeSelection';
+type Route = 'home' | 'about' | 'contact' | 'provider' | 'serviceSelection' | 'dateTimeSelection' | 'bookingConfirmation';
 
 const routeToPath: Record<Route, string> = {
   home: '/',
@@ -17,12 +17,14 @@ const routeToPath: Record<Route, string> = {
   contact: '/contact',
   provider: '/provider',
   serviceSelection: '/book',
-  dateTimeSelection: '/book/datetime'
+  dateTimeSelection: '/book/datetime',
+  bookingConfirmation: '/book/confirm'
 };
 
 const pathToRoute = (pathname: string): Route => {
   if (pathname === '/about') return 'about';
   if (pathname === '/contact') return 'contact';
+  if (pathname === '/book/confirm') return 'bookingConfirmation';
   if (pathname === '/book/datetime') return 'dateTimeSelection';
   if (pathname === '/book') return 'serviceSelection';
   if (pathname.startsWith('/provider')) return 'provider';
@@ -32,7 +34,11 @@ const pathToRoute = (pathname: string): Route => {
 interface RoutingContextType {
   currentRoute: Route;
   selectedProvider: Provider | null;
+  selectedServices: string[];
+  selectedDate: string;
+  selectedTime: string;
   navigate: (route: Route, provider?: Provider) => void;
+  setBookingData: (services: string[], date: string, time: string) => void;
 }
 
 const RoutingContext = createContext<RoutingContextType | undefined>(undefined);
@@ -44,6 +50,18 @@ export const RoutingProvider: React.FC<{ children: ReactNode }> = ({ children })
     const stored = sessionStorage.getItem('selectedProvider');
     return stored ? JSON.parse(stored) : null;
   });
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedTime, setSelectedTime] = useState<string>('');
+
+  const setBookingData = (services: string[], date: string, time: string) => {
+    setSelectedServices(services);
+    setSelectedDate(date);
+    setSelectedTime(time);
+    sessionStorage.setItem('selectedServices', JSON.stringify(services));
+    sessionStorage.setItem('selectedDate', date);
+    sessionStorage.setItem('selectedTime', time);
+  };
 
   useEffect(() => {
     // Listen for browser back/forward navigation
@@ -90,7 +108,15 @@ export const RoutingProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   return (
-    <RoutingContext.Provider value={{ currentRoute, selectedProvider, navigate }}>
+    <RoutingContext.Provider value={{ 
+      currentRoute, 
+      selectedProvider, 
+      selectedServices,
+      selectedDate,
+      selectedTime,
+      navigate,
+      setBookingData
+    }}>
       {children}
     </RoutingContext.Provider>
   );
