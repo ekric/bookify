@@ -24,6 +24,19 @@
     "massage": "Massage",
     "fitness": "Fitness",
     "legal": "Legal Services"
+  },
+  "serviceCategories": {
+    "women": "Women",
+    "men": "Men",
+    "kids": "Kids"
+  },
+  "booking": {
+    "selectServices": "Select Services",
+    "selectDateTime": "Select Date & Time",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "total": "Total",
+    "continue": "Continue"
   }
 }
 

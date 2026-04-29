@@ -9,18 +9,22 @@ export interface Provider {
   type: ServiceType;
 }
 
-type Route = 'home' | 'about' | 'contact' | 'provider';
+type Route = 'home' | 'about' | 'contact' | 'provider' | 'serviceSelection' | 'dateTimeSelection';
 
 const routeToPath: Record<Route, string> = {
   home: '/',
   about: '/about',
   contact: '/contact',
-  provider: '/provider'
+  provider: '/provider',
+  serviceSelection: '/book',
+  dateTimeSelection: '/book/datetime'
 };
 
 const pathToRoute = (pathname: string): Route => {
   if (pathname === '/about') return 'about';
   if (pathname === '/contact') return 'contact';
+  if (pathname === '/book/datetime') return 'dateTimeSelection';
+  if (pathname === '/book') return 'serviceSelection';
   if (pathname.startsWith('/provider')) return 'provider';
   return 'home';
 };
@@ -51,15 +55,15 @@ export const RoutingProvider: React.FC<{ children: ReactNode }> = ({ children })
       if (route === 'provider' && event.state?.provider) {
         setSelectedProvider(event.state.provider);
         sessionStorage.setItem('selectedProvider', JSON.stringify(event.state.provider));
-      } else if (route !== 'provider') {
-        setSelectedProvider(null);
-        sessionStorage.removeItem('selectedProvider');
-      } else if (route === 'provider') {
-        // Try to restore from sessionStorage
+      } else if (route === 'serviceSelection') {
+        // Restore provider from sessionStorage for service selection
         const stored = sessionStorage.getItem('selectedProvider');
         if (stored) {
           setSelectedProvider(JSON.parse(stored));
         }
+      } else if (route !== 'provider') {
+        setSelectedProvider(null);
+        sessionStorage.removeItem('selectedProvider');
       }
     };
 
@@ -79,7 +83,7 @@ export const RoutingProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (provider) {
       setSelectedProvider(provider);
       sessionStorage.setItem('selectedProvider', JSON.stringify(provider));
-    } else if (route !== 'provider') {
+    } else if (route !== 'provider' && route !== 'serviceSelection') {
       setSelectedProvider(null);
       sessionStorage.removeItem('selectedProvider');
     }

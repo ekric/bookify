@@ -6,6 +6,8 @@ import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import ServiceProviderPage from './pages/ServiceProviderPage';
+import ServiceSelectionPage from './pages/ServiceSelectionPage';
+import DateTimeSelectionPage from './pages/DateTimeSelectionPage';
 
 const AppContent: React.FC = () => {
   const { currentRoute } = useRouting();
@@ -20,6 +22,10 @@ const AppContent: React.FC = () => {
         return <ContactPage />;
       case 'provider':
         return <ServiceProviderPage />;
+      case 'serviceSelection':
+        return <ServiceSelectionPage />;
+      case 'dateTimeSelection':
+        return <DateTimeSelectionPage />;
       default:
         return <HomePage />;
     }

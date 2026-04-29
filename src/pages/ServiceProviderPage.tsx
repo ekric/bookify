@@ -120,8 +120,7 @@ const ServiceProviderPage: React.FC = () => {
         }}>
           <button
             onClick={() => {
-              // Handle booking - could navigate to a booking page or show a modal
-              alert('Booking functionality coming soon!');
+              navigate('serviceSelection', selectedProvider);
             }}
             style={{
               flex: 1,

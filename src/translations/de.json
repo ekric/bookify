@@ -24,6 +24,19 @@
     "massage": "Massage",
     "fitness": "Fitness",
     "legal": "Rechtsanwalt"
+  },
+  "serviceCategories": {
+    "women": "Damen",
+    "men": "Herren",
+    "kids": "Kinder"
+  },
+  "booking": {
+    "selectServices": "Leistungen auswählen",
+    "selectDateTime": "Datum & Uhrzeit wählen",
+    "selectDate": "Datum wählen",
+    "selectTime": "Uhrzeit wählen",
+    "total": "Gesamt",
+    "continue": "Weiter"
   }
 }
 
