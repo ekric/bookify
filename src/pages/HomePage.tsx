@@ -1,20 +1,9 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
-import { Provider } from '../contexts/RoutingContext';
+import { Provider, providers } from '../data/providers';
 import { ServiceType } from '../data/serviceCatalog';
-
-const providers: Provider[] = [
-  { name: "Friseur am Brandenburger Tor", city: "Berlin", zip: "10115", type: "hair" },
-  { name: "Autowerkstatt München Süd", city: "München", zip: "80331", type: "auto" },
-  { name: "Wellness Oase Hamburg", city: "Hamburg", zip: "20095", type: "wellness" },
-  { name: "IT-Service Frankfurt", city: "Frankfurt am Main", zip: "60311", type: "it" },
-  { name: "Tierpflege Köln", city: "Köln", zip: "50667", type: "pet" },
-  { name: "Zahnarztpraxis Stuttgart", city: "Stuttgart", zip: "70173", type: "dental" },
-  { name: "Massage Studio Düsseldorf", city: "Düsseldorf", zip: "40213", type: "massage" },
-  { name: "Fitness Center Dortmund", city: "Dortmund", zip: "44135", type: "fitness" },
-  { name: "Rechtsanwaltskanzlei Essen", city: "Essen", zip: "45127", type: "legal" },
-];
+import { getProviderPath } from '../data/providers';
 
 const HomePage: React.FC = () => {
   const { t } = useI18n();
@@ -171,7 +160,7 @@ const HomePage: React.FC = () => {
                       padding: '0.5rem 0',
                     }}>
                       <a
-                        href="#"
+                        href={getProviderPath(p)}
                         onClick={(e) => {
                           e.preventDefault();
                           navigate('provider', p);
