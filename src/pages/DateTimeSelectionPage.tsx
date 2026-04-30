@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
+import { ServiceType } from '../data/serviceCatalog';
 
 interface Service {
   id: string;
@@ -19,6 +20,29 @@ interface DateOption {
   label: string;
   available: boolean;
 }
+
+const PROVIDER_AVAILABILITY: Record<ServiceType, {
+  excludedWeekdays: number[];
+  earliestHour: number;
+  latestHour: number;
+  lunchBreak: boolean;
+  dateThreshold: number;
+  timeThreshold: number;
+}> = {
+  hair: { excludedWeekdays: [0], earliestHour: 9, latestHour: 18, lunchBreak: true, dateThreshold: 2, timeThreshold: 3 },
+  auto: { excludedWeekdays: [0], earliestHour: 8, latestHour: 16, lunchBreak: true, dateThreshold: 1, timeThreshold: 4 },
+  wellness: { excludedWeekdays: [0], earliestHour: 10, latestHour: 20, lunchBreak: false, dateThreshold: 3, timeThreshold: 2 },
+  it: { excludedWeekdays: [0, 6], earliestHour: 9, latestHour: 18, lunchBreak: false, dateThreshold: 2, timeThreshold: 5 },
+  pet: { excludedWeekdays: [0], earliestHour: 9, latestHour: 17, lunchBreak: true, dateThreshold: 4, timeThreshold: 4 },
+  dental: { excludedWeekdays: [0, 6], earliestHour: 8, latestHour: 15, lunchBreak: true, dateThreshold: 3, timeThreshold: 3 },
+  massage: { excludedWeekdays: [0], earliestHour: 10, latestHour: 19, lunchBreak: false, dateThreshold: 2, timeThreshold: 2 },
+  fitness: { excludedWeekdays: [0], earliestHour: 6, latestHour: 22, lunchBreak: false, dateThreshold: 1, timeThreshold: 3 },
+  legal: { excludedWeekdays: [0, 6], earliestHour: 9, latestHour: 17, lunchBreak: false, dateThreshold: 5, timeThreshold: 4 }
+};
+
+const getProviderAvailability = (type: ServiceType) => {
+  return PROVIDER_AVAILABILITY[type] || PROVIDER_AVAILABILITY.hair;
+};
 
 const DateTimeSelectionPage: React.FC = () => {
   const { t } = useI18n();
@@ -53,12 +77,12 @@ const DateTimeSelectionPage: React.FC = () => {
       
       const dayOfWeek = date.getDay();
       const isPast = date < today;
-      const isSunday = dayOfWeek === 0;
-      
-      // Deterministic availability based on date string
+      const availability = selectedProvider ? getProviderAvailability(selectedProvider.type) : getProviderAvailability('hair');
+      const isExcludedWeekday = availability.excludedWeekdays.includes(dayOfWeek);
+
       const dateStr = date.toISOString().split('T')[0];
       const hash = dateStr.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const available = !isPast && !isSunday && (hash % 10) > 2;
+      const available = !isPast && !isExcludedWeekday && (hash + availability.dateThreshold) % 10 > 2;
       
       days.push({
         date: dateStr,
@@ -92,16 +116,16 @@ const DateTimeSelectionPage: React.FC = () => {
   // Generate time slots (9 AM to 6 PM)
   const getTimeSlots = (): TimeSlot[] => {
     const slots: TimeSlot[] = [];
+    const availability = selectedProvider ? getProviderAvailability(selectedProvider.type) : getProviderAvailability('hair');
     
-    for (let hour = 9; hour <= 18; hour++) {
-      // Skip lunch break (12-13)
-      if (hour === 12) continue;
+    for (let hour = availability.earliestHour; hour <= availability.latestHour; hour++) {
+      if (availability.lunchBreak && hour === 12) continue;
       
       const time = `${hour.toString().padStart(2, '0')}:00`;
-      
-      // Deterministic availability based on date and time
       const hash = (selectedDate + time).split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-      const available = (hash + hour) % 10 > 3;
+      const available = selectedDate
+        ? (hash + availability.timeThreshold + hour) % 10 > 3
+        : false;
       
       slots.push({ time, available });
     }
