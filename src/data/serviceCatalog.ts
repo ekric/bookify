@@ -182,13 +182,22 @@ export const getServiceCategoriesForType = (type: ServiceType): ServiceCategory[
 };
 
 export const getServiceDetailsByType = (type: ServiceType, serviceIds: string[]): Service[] => {
-  return getServiceCategoriesForType(type)
-    .flatMap((category) => category.services)
-    .filter((service) => serviceIds.includes(service.id));
+  const services: Service[] = [];
+  getServiceCategoriesForType(type).forEach((category) => {
+    services.push(...category.services);
+  });
+
+  return services.filter((service) => serviceIds.includes(service.id));
 };
 
 export const getServiceById = (serviceId: string): Service | undefined => {
-  return Object.values(SERVICE_CATALOG)
-    .flatMap((categories) => categories.flatMap((category) => category.services))
-    .find((service) => service.id === serviceId);
+  const services: Service[] = [];
+
+  Object.values(SERVICE_CATALOG).forEach((categories) => {
+    categories.forEach((category) => {
+      services.push(...category.services);
+    });
+  });
+
+  return services.find((service) => service.id === serviceId);
 };
