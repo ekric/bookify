@@ -1,26 +1,15 @@
 import React from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
-
-interface Service {
-  id: string;
-  name: string;
-  duration: string;
-  price: number;
-}
+import { getServiceDetailsByType } from '../data/serviceCatalog';
 
 const BookingConfirmationPage: React.FC = () => {
   const { t } = useI18n();
   const { selectedProvider, selectedServices, selectedDate, selectedTime, navigate } = useRouting();
 
-  // Service data (mirrored from ServiceSelectionPage)
-  const allServices: Service[] = [
-    { id: 'women-1', name: 'Haircut & Styling', duration: '60 min', price: 45 },
-    { id: 'men-1', name: 'Classic Haircut', duration: '30 min', price: 25 },
-    { id: 'kids-1', name: 'Kids Haircut', duration: '20 min', price: 15 },
-  ];
-
-  const selectedServiceDetails = allServices.filter((s) => selectedServices.includes(s.id));
+  const selectedServiceDetails = selectedProvider
+    ? getServiceDetailsByType(selectedProvider.type, selectedServices)
+    : [];
 
   const formatDate = (dateStr: string): string => {
     const date = new Date(dateStr + 'T00:00:00');

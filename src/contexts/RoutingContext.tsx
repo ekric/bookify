@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-
-export type ServiceType = 'hair' | 'auto' | 'wellness' | 'it' | 'pet' | 'dental' | 'massage' | 'fitness' | 'legal';
+import { ServiceType } from '../data/serviceCatalog';
 
 export interface Provider {
   name: string;
@@ -129,4 +128,3 @@ export const useRouting = (): RoutingContextType => {
   }
   return context;
 };
-

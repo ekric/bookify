@@ -1,7 +1,7 @@
 import React from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
-import { ServiceType } from '../contexts/RoutingContext';
+import { ServiceType } from '../data/serviceCatalog';
 
 const ServiceProviderPage: React.FC = () => {
   const { t } = useI18n();

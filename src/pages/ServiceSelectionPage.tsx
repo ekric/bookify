@@ -1,48 +1,16 @@
 import React, { useState } from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
-
-interface Service {
-  id: string;
-  name: string;
-  duration: string;
-  price: number;
-}
-
-interface ServiceCategory {
-  id: string;
-  labelKey: string;
-  services: Service[];
-}
+import { getServiceCategoriesForType, ServiceCategory } from '../data/serviceCatalog';
 
 const ServiceSelectionPage: React.FC = () => {
   const { t } = useI18n();
   const { selectedProvider, navigate } = useRouting();
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
 
-  const categories: ServiceCategory[] = [
-    {
-      id: 'women',
-      labelKey: 'serviceCategories.women',
-      services: [
-        { id: 'women-1', name: 'Haircut & Styling', duration: '60 min', price: 45 },
-      ],
-    },
-    {
-      id: 'men',
-      labelKey: 'serviceCategories.men',
-      services: [
-        { id: 'men-1', name: 'Classic Haircut', duration: '30 min', price: 25 },
-      ],
-    },
-    {
-      id: 'kids',
-      labelKey: 'serviceCategories.kids',
-      services: [
-        { id: 'kids-1', name: 'Kids Haircut', duration: '20 min', price: 15 },
-      ],
-    },
-  ];
+  const categories: ServiceCategory[] = selectedProvider
+    ? getServiceCategoriesForType(selectedProvider.type)
+    : [];
 
   const toggleService = (serviceId: string) => {
     setSelectedServices((prev) => {
@@ -168,7 +136,7 @@ const ServiceSelectionPage: React.FC = () => {
                 borderBottom: '2px solid #2575fc',
               }}
             >
-              {t(category.labelKey)}
+              {category.label}
             </h2>
             {category.services.map((service) => {
               const isSelected = selectedServices.includes(service.id);

@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent } from 'react';
 import { useI18n } from '../i18n';
 import { useRouting } from '../contexts/RoutingContext';
-import { ServiceType, Provider } from '../contexts/RoutingContext';
+import { Provider } from '../contexts/RoutingContext';
+import { ServiceType } from '../data/serviceCatalog';
 
 const providers: Provider[] = [
   { name: "Friseur am Brandenburger Tor", city: "Berlin", zip: "10115", type: "hair" },
