@@ -36,7 +36,12 @@
     "selectDate": "Datum wählen",
     "selectTime": "Uhrzeit wählen",
     "total": "Gesamt",
-    "continue": "Weiter"
+    "continue": "Weiter",
+    "confirmTitle": "Buchung bestätigen",
+    "provider": "Dienstleister",
+    "services": "Ausgewählte Leistungen",
+    "dateTime": "Termin",
+    "bookNow": "Jetzt Buchen"
   }
 }
 

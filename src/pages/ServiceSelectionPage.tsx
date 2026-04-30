@@ -82,6 +82,8 @@ const ServiceSelectionPage: React.FC = () => {
   };
 
   const handleContinue = () => {
+    // Store selected services in sessionStorage
+    sessionStorage.setItem('selectedServices', JSON.stringify(selectedServices));
     navigate('dateTimeSelection', selectedProvider || undefined);
   };
 

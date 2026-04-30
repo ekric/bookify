@@ -36,7 +36,12 @@
     "selectDate": "Select Date",
     "selectTime": "Select Time",
     "total": "Total",
-    "continue": "Continue"
+    "continue": "Continue",
+    "confirmTitle": "Confirm Your Booking",
+    "provider": "Service Provider",
+    "services": "Selected Services",
+    "dateTime": "Appointment",
+    "bookNow": "Book Now"
   }
 }
 

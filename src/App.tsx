@@ -8,6 +8,7 @@ import ContactPage from './pages/ContactPage';
 import ServiceProviderPage from './pages/ServiceProviderPage';
 import ServiceSelectionPage from './pages/ServiceSelectionPage';
 import DateTimeSelectionPage from './pages/DateTimeSelectionPage';
+import BookingConfirmationPage from './pages/BookingConfirmationPage';
 
 const AppContent: React.FC = () => {
   const { currentRoute } = useRouting();
@@ -26,6 +27,8 @@ const AppContent: React.FC = () => {
         return <ServiceSelectionPage />;
       case 'dateTimeSelection':
         return <DateTimeSelectionPage />;
+      case 'bookingConfirmation':
+        return <BookingConfirmationPage />;
       default:
         return <HomePage />;
     }

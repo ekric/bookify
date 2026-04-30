@@ -22,7 +22,7 @@ interface DateOption {
 
 const DateTimeSelectionPage: React.FC = () => {
   const { t } = useI18n();
-  const { selectedProvider, navigate } = useRouting();
+  const { selectedProvider, navigate, setBookingData } = useRouting();
   const [selectedDate, setSelectedDate] = useState<string>('');
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [calendarDate, setCalendarDate] = useState<Date>(new Date());
@@ -121,8 +121,10 @@ const DateTimeSelectionPage: React.FC = () => {
   const handleContinue = () => {
     if (!selectedDate || !selectedTime) return;
     
-    // TODO: Navigate to confirmation page with all booking details
-    alert(`Booking: ${selectedDate} at ${selectedTime}`);
+    // Get selected services from sessionStorage
+    const services = JSON.parse(sessionStorage.getItem('selectedServices') || '[]');
+    setBookingData(services, selectedDate, selectedTime);
+    navigate('bookingConfirmation', selectedProvider || undefined);
   };
 
   if (!selectedProvider) {
